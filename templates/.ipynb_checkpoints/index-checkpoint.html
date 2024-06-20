@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<html>
+<head>
+    <title>Stock Sentiment App v1.0</title>
+<!--     Important to send user data to app.py -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<center>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  $( document ).ready(function() {
+    $('#download').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/generate', {
+        prefix: $('input[name="prefix"]').val()
+      }, function(data) {
+        $("#result").text(data.result);
+      });
+      return false;
+    });
+  });
+</script><br>
+ <h2>Stock Sentiment App v1.0</h2>
+<p><input type=text size=45 name=prefix>
+  
+<p><button type="submit" id=download>Send URL to AI</button></p>
+    <p>Your input is: <span id=result></span></p>
+    
+</center>
+</body>
+</html>
