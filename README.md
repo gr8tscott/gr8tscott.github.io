@@ -2,7 +2,13 @@
 # A Deep Dive into OpenAI
 
 I am going to build an application that uses the OpenAI platform/framework to fetch news articles on publicly traded companies, feed them into the AI for analysis, and output a sentiment (buy, sell, hold).  By building this project I will be able to gain key experience and insight into OpenAI, AGI, and APIs that will serve me for years to come as these tools and softwares become more and more prevalent in our day to day.
- 
+
+# Proposed Timeline
+| **Milestone** | **Description** | **Planned Completion** | **Expectations Met?**  |   
+|---------------|-----------------|------------------------|---|
+| 1 Frontend App started            |                 |                        |   |  
+| 2             |                 |                        |   |   
+| 3             |                 |                        |   | 
 # Weekly Updates
 ## Week 4
 **What happened last week?**
