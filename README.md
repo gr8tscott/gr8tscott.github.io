@@ -10,6 +10,23 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 2             |                 |                        |   |   
 | 3             |                 |                        |   | 
 # Weekly Updates
+## Week 5
+**What happened last week?**
+I added a basic flask app that takes user input and added initial webscraping .sh files. The scraper.sh file currently scrapes article title but will expand to include main body text.
+After reflecting on my time constraints I've begun planning out a proposed timeline to keep the project on track for completion.
+Updated my personal website.
+
+**What do I plan to do this week?** 
+This next week I plan to hook up my frontend app to the OpenAI API and will begin crafting the prompt tree for it's input/output.
+I have also been exploring other options such as Ollama which may work as a cheaper alternative expecially in the early stages of the app when getting it running. Ollama is an open-source framework that allows users to run large language models (LLMs) locally on their machines. It's designed to be user-friendly, efficient, and scalable, making it a good option for developers and organizations who want to deploy AI models into production.
+
+**Are there any temporary roadblocks?**
+I have exams and family obligations this week so making sure to stay up to date on my work expectations for the project.
+
+**How can I make the process work better?**
+This week I was able to start getting to the meat of development after doing my research so I've started building momentum and having fun with it. To keep up motivation I'm going to try to maintain forward progress and not get stuck on any one step.
+
+
 ## Week 4
 **What happened last week?**
 I reviewed and provided advice for my peers assessments. Began working on the web scraping code and researching OpenAI applications to understand how to use it in development.
