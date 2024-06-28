@@ -10,6 +10,20 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 2             |                 |                        |   |   
 | 3             |                 |                        |   | 
 # Weekly Updates
+## Week 6
+**What happened last week?**
+This week I was able to hook up my frontend app to the OpenAI API and began crafting the prompt tree for it's input/output. I'm still making tweaks to the prompts to ensure it does exactly as desirable consistently.
+
+**What do I plan to do this week?** 
+With the API hooked up and the basic frontend backbone implemented I want to focus my time this next week on the news article scraper which I expect will take a good bit of time to get working properly. I may need to use another API to efficiently search for the right news articles I want.
+
+**Are there any temporary roadblocks?**
+More exams and travel this next week so I'll be in the thick of it but will try to get ahead by a length or two.
+
+**How can I make the process work better?**
+I have started implementing a schedule but am finding it difficult to plan accordingly since my obligations week to week change so frequently, I'm making the goal to block out a designated couple of hours to make the progress happen rather than starting and stopping multiple times a week as it feels inefficient.
+
+
 ## Week 5
 **What happened last week?**
 I added a basic flask app that takes user input and added initial webscraping .sh files. The scraper.sh file currently scrapes article title but will expand to include main body text.
