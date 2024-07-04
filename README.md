@@ -10,6 +10,20 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 2             |                 |                        |   |   
 | 3             |                 |                        |   | 
 # Weekly Updates
+## Week 7
+**What happened last week?**
+This week I focused my time on the news article scraping script for my app. I was able to make progress towards getting the script to work functionally with my frontend app so that when a user provides a news article the script scrapes the information and stores it locally. I also researched and reflected on the learning and job search resources available to me.
+
+**What do I plan to do this week?** 
+This next week I'm going work on sending the news article data to OpenAI and fine tuning its responses.
+
+**Are there any temporary roadblocks?**
+This last week was challenging due to the holiday, exams, and personal life changes; but life goes on and we were able to still make progress.
+
+**How can I make the process work better?**
+Blocking out a set couple of hours felt more effective this last week than the start/stop/repeat process I was using before.
+
+
 ## Week 6
 **What happened last week?**
 This week I was able to hook up my frontend app to the OpenAI API and began crafting the prompt tree for it's input/output. I'm still making tweaks to the prompts to ensure it does exactly as desirable consistently.
