@@ -10,6 +10,19 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 2             |                 |                        |   |   
 | 3             |                 |                        |   | 
 # Weekly Updates
+## Week 8
+**What happened last week?**
+This past week I was not able to make very much forward progress on my project. I had a technical issue that led to a local commit/git issue that forced me to recover from a much earlier version and spent a good portion of time bringing the project back up to speed, still somewhat behind where I was but life goes on and this gives the opportunity to redo previous iterations better.
+
+**What do I plan to do this week?** 
+Finish getting my project caught back up. Produce a Project Update Report. 
+
+**Are there any temporary roadblocks?**
+Technical difficulties arose but I'm catching up from them and don't think they will hurt the longterm of the project.
+
+**How can I make the process work better?**
+Just need to be better about making sure my commits are pushed up more regularly, which has been difficult when working offline as of late.
+
 ## Week 7
 **What happened last week?**
 This week I focused my time on the news article scraping script for my app. I was able to make progress towards getting the script to work functionally with my frontend app so that when a user provides a news article the script scrapes the information and stores it locally. I also researched and reflected on the learning and job search resources available to me.
