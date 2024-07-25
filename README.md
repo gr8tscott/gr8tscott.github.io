@@ -4,12 +4,31 @@
 I am going to build an application that uses the OpenAI platform/framework to fetch news articles on publicly traded companies, feed them into the AI for analysis, and output a sentiment (buy, sell, hold).  By building this project I will be able to gain key experience and insight into OpenAI, AGI, and APIs that will serve me for years to come as these tools and softwares become more and more prevalent in our day to day.
 
 # Proposed Timeline
-| **Milestone** | **Description** | **Planned Completion** | **Expectations Met?**  |   
-|---------------|-----------------|------------------------|---|
-| 1 Frontend App started            |                 |                        |   |  
-| 2             |                 |                        |   |   
-| 3             |                 |                        |   | 
+| **Milestone** | **Description** | **Expectations Met?**  |   
+|---------------|-----------------|------------------------|
+| 1 Frontend App started            |  Create the basic structure for the Flask application               |   Yes                     |  
+| 2 OpenAI API API Hookup            | Set up the OpenAI API to work with my application                |    Yes                    |   
+| 3 Webscrape Article Data            |    Provide webscraping script with article and verify it properly scrapes the data             |    Yes                    |   
+| 4 Send Webscraped Data to AI           |  Send the webscraped data to the AI and send it's response of the analyzed data back.               |     Yes                   |   
+| 5 Database to track AI responses            |  Create a database to keep track of the AI responses, try to tie in live stock data to track over time               |                          | 
+| 6 CSS for App           |  Build out the application, make it look nice, display the database tracked data                      |   | 
+| 7 Automate Webscraper (webcrawler?)            | Set up the web scraper to automatically search articles on stocks (at specified time, 9am EST before markets open)                |                        |   
+
 # Weekly Updates
+## Week 9
+**What happened last week?**
+I spent this last week getting my project caught back up after technical difficulties. We are almost back on track and hopefully will start moving forward on next stages. Produced and turned in the Project Update Report. 
+
+**What do I plan to do this week?** 
+I want to start building the database to store the responses from the AI this week. 
+
+**Are there any temporary roadblocks?**
+Traveling this week and will have some time constraints.
+
+**How can I make the process work better?**
+Process is going well, need to keep making forward progress.
+
+
 ## Week 8
 **What happened last week?**
 This past week I was not able to make very much forward progress on my project. I had a technical issue that led to a local commit/git issue that forced me to recover from a much earlier version and spent a good portion of time bringing the project back up to speed, still somewhat behind where I was but life goes on and this gives the opportunity to redo previous iterations better.
