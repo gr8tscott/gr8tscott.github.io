@@ -26,7 +26,7 @@ I need to finish tying in my database to the application to track the accuracy o
 Inundated with end of semester exams and projects, along with family events, requiring significant portions of time.
 
 **How can I make the process work better?**
-Planning a set time in the comming days to finalize my project.
+Planning a set time in the coming days to finalize my project.
 
 
 ## Week 10
