@@ -15,6 +15,20 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 7 Automate Webscraper (webcrawler?)            | Set up the web scraper to automatically search articles on stocks (at specified time, 9am EST before markets open)                |                        |   
 
 # Weekly Updates
+## Week 11
+**What happened last week?**
+I wasn't able to make as much progress on the database as I had hoped this last week. I made some CSS updates and a few tweaks to the database but it still has a ways to go.
+
+**What do I plan to do this week?** 
+I need to finish tying in my database to the application to track the accuracy of the application. I also need to finalize the CSS for the frontend as well.
+
+**Are there any temporary roadblocks?**
+Inundated with end of semester exams and projects, along with family events, requiring significant portions of time.
+
+**How can I make the process work better?**
+Planning a set time in the comming days to finalize my project.
+
+
 ## Week 10
 **What happened last week?**
 I was able to build the skeleton for my database. 
