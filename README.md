@@ -10,11 +10,26 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 2 OpenAI API API Hookup            | Set up the OpenAI API to work with my application                |    Yes                    |   
 | 3 Webscrape Article Data            |    Provide webscraping script with article and verify it properly scrapes the data             |    Yes                    |   
 | 4 Send Webscraped Data to AI           |  Send the webscraped data to the AI and send it's response of the analyzed data back.               |     Yes                   |   
-| 5 Database to track AI responses            |  Create a database to keep track of the AI responses, try to tie in live stock data to track over time               |                          | 
+| 5 Database to track AI responses            |  Create a database to keep track of the AI responses, try to tie in live stock data to track over time               | Yes                         | 
 | 6 CSS for App           |  Build out the application, make it look nice, display the database tracked data                      |   | 
 | 7 Automate Webscraper (webcrawler?)            | Set up the web scraper to automatically search articles on stocks (at specified time, 9am EST before markets open)                |                        |   
+| 8 Deploy App  | Deploy the application using Render  |     |
 
 # Weekly Updates
+## Week 12
+**What happened last week?**
+This last week I was able to tie in my database to the application to keep track of the AI analysis of the stocks. 
+
+**What do I plan to do this week?** 
+I need to finish up the CSS for the application and hopefully deploy it for viewing. There are a few more things I'd like but will wrap things up for this class regarding the project. I will also finish up my final project report.
+
+**Are there any temporary roadblocks?**
+No roadblocks outside of finalizing other class projects/exams.
+
+**How can I make the process work better?**
+Focus on wrapping up the project to as close to completeness as possible in the next few days.
+
+
 ## Week 11
 **What happened last week?**
 I wasn't able to make as much progress on the database as I had hoped this last week. I made some CSS updates and a few tweaks to the database but it still has a ways to go.
