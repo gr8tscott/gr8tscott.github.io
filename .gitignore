@@ -1,0 +1,6 @@
+.env
+venv
+
+new-openai-test.py
+openai-test.py
+

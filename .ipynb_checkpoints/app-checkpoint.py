@@ -9,12 +9,23 @@ from Prefix import prefix
 # import psycopg2
 import subprocess
 import urllib.parse
+from openai import OpenAI
+from dotenv import load_dotenv
+import time
+
 
 
 from flask import Flask, url_for
 
 # create app to use in this Flask application
 app = Flask(__name__)
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the API key from the environment variables
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 # Insert the wrapper for handling PROXY when using csel.io virtual machine
 # Calling this routine will have no effect if running on local machine:
@@ -60,9 +71,8 @@ def index():
             <li>{}</li>
             <li>{}</li>
             <li>{}</li>
-            <li>{}</li>
         </ul>
-        '''.format(url_for('index'),url_for('hello'),url_for('projects'),url_for('about'))
+        '''.format(url_for('index'),url_for('hello'),url_for('about'))
     # return lst
     return render_template('index.html')
 
@@ -78,41 +88,85 @@ def index():
 #     print(urls)
 #     # return jsonify(result=urls)
 #     return jsonify(result = prefix)
+# @app.route('/generate', methods=['GET'])
+# def generate():
+#     url = request.args.get('prefix')
+#     print(f"User input received: {url}")
+
+#     # Ensure the URL is properly encoded
+#     encoded_url = urllib.parse.quote(url, safe=':/')
+
+#     script_path = os.path.join('extract_scripts', 'scraper.sh')
+
+#     try:
+#         # Run the script
+#         result = subprocess.run([script_path, encoded_url], check=True, capture_output=True, text=True)
+#         output = result.stdout.strip().splitlines()[-1]  # Get the last line of the output
+#         error = result.stderr.strip()
+
+#         print(f"Script output: {output}")
+#         print(f"Script error: {error}")
+
+#         # Check if the script output is a valid file path and the file exists
+#         if os.path.isfile(output):
+#             print(f"File found: {output}")
+#             with open(output, 'r') as file:
+#                 file_content = file.read()
+#             return jsonify(result=file_content)
+#         else:
+#             print(f"File not found: {output}")
+#             return jsonify(result=f"Text file not found at the expected path: {output}"), 500
+#     except subprocess.CalledProcessError as e:
+#         print(f"Script execution failed: {e}")
+#         print(f"Script stderr: {e.stderr}")
+#         return jsonify(result=f"Script execution failed with error: {e.stderr}"), 500
+#     except Exception as e:
+#         print(f"Unexpected error: {e}")
+#         return jsonify(result=f"Unexpected error: {e}"), 500
 @app.route('/generate', methods=['GET'])
 def generate():
     url = request.args.get('prefix')
-    print(f"User input received: {url}")
+    # Run your extraction script here and get the path to the text file
+    text_file_path = run_extraction_script(url)
 
-    # Ensure the URL is properly encoded
-    encoded_url = urllib.parse.quote(url, safe=':/')
-
-    script_path = os.path.join('extract_scripts', 'scraper.sh')
-
+    # Read the content of the text file
+    with open(text_file_path, 'r') as file:
+        content = file.read()
+        
+    # Truncate the content to the first 500 characters
+    truncated_content = content[:250]
+    
+    # Call the OpenAI API with the extracted content
     try:
-        # Run the script
-        result = subprocess.run([script_path, encoded_url], check=True, capture_output=True, text=True)
-        output = result.stdout.strip().splitlines()[-1]  # Get the last line of the output
-        error = result.stderr.strip()
-
-        print(f"Script output: {output}")
-        print(f"Script error: {error}")
-
-        # Check if the script output is a valid file path and the file exists
-        if os.path.isfile(output):
-            print(f"File found: {output}")
-            with open(output, 'r') as file:
-                file_content = file.read()
-            return jsonify(result=file_content)
-        else:
-            print(f"File not found: {output}")
-            return jsonify(result=f"Text file not found at the expected path: {output}"), 500
-    except subprocess.CalledProcessError as e:
-        print(f"Script execution failed: {e}")
-        print(f"Script stderr: {e.stderr}")
-        return jsonify(result=f"Script execution failed with error: {e.stderr}"), 500
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You analyze news articles and give a sentiment: 'buy', 'sell', or 'hold' based on the content. Output only the company ticker symbol followed by your sentiment grade. Do not summarize."},
+                {"role": "user", "content": truncated_content}
+            ]
+        )
+        print(response.choices[0].message.content)
+        print(response.choices[0].message.content.strip())
+        # result = response.choices[0].message['content'].strip()
+        result = response.choices[0].message.content
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        return jsonify(result=f"Unexpected error: {e}"), 500
+        result = str(e)
+    
+    return jsonify(result=result)
+
+def run_extraction_script(url):
+    script_path = "extract_scripts/scraper.sh"
+    result = subprocess.run([script_path, url], capture_output=True, text=True)
+    output = result.stdout.strip().split('\n')
+
+    # Assuming the last line of the script output is the text file path
+    text_file_path = output[-1]
+
+    # Ensure the path is correct and wait for the file to be created if necessary
+    while not os.path.exists(text_file_path):
+        time.sleep(1)
+    
+    return text_file_path
 
     
 @app.route('/hello')
@@ -128,29 +182,6 @@ def hello():
         This is the welcome page for Lab 6 of CSPB 3308!
         '''
     return welcome
-
-@app.route('/projects/')
-def projects():
-    """
-    Route to display the projects page.
-
-    Returns:
-        str: HTML content for the projects page.
-    """
-    lst = ''' 
-        <h1>Optional Routes</h1>
-        <ul>
-            <li>{}</li>
-            - Cart is a static ascii text page where the text is read from a known filename in templates directory.
-            <br></br>
-            <li>{}</li>
-            - Resorts is a table of ski resorts and is a static HTML page where the HTML reads from file specified in a route parameterwhich is in the static directory.
-            <br></br>
-            <li>{}</li>
-            - Movies displays the title of a film and it's director's name by way of dynamic text where it displays from data received in the URL.
-        </ul>
-        '''.format(url_for('cart'),url_for('resorts'),'/movie?title=Avatar&director=James%20Cameron')
-    return lst
 
 @app.route('/about')
 def about():
