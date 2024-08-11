@@ -3,10 +3,10 @@
 #  dir.sh
 #
 # Purpose:
-#   Build a directory hierarchy to store files for each Article
+#   Build a directory hierarchy to store files for each recipe
 #
 # Inputs:
-#   $1 = Article File Path
+#   $1 = Recipe File Path
 #
 # Outputs:
 #   Print what directory has been created
@@ -17,7 +17,7 @@
 # Exits
 #   0 = success
 #   1 = no name entered for directory creation
-#   3 = no Article dir
+#   3 = no Recipe dir
 #   4 = File already exists
 #    
 # Changelog:
@@ -28,7 +28,7 @@
 #------------------------------------------------------------------
 #------------------------------------------------------------------
 DEBUG=1
-echo "Current working directory in verify.sh: $(pwd)"
+
 #---------------
 # Only echoes if debug is turned on
 #---------------
@@ -43,13 +43,13 @@ decho () {
 #-------------------------
 #   Validate Data Directory Exists, Return error if not
 #-------------------------
-verifyArticleDir () {
+verifyRecipeDir () {
 
-    decho "Checking for Articles Directory"
+    decho "Checking for Recipes Directory"
 
-    if [[ ! -e "Articles" ]];
+    if [[ ! -e "Recipes" ]];
     then
-        decho "Articles Directory does not exist. Pleae run from correct directory."
+        decho "Recipes Directory does not exist. Pleae run from correct directory."
         exit 3
     fi
 }
@@ -103,7 +103,7 @@ filePath=$1
 # Verify Data Dir exists
 #-------------------------
 decho "Checking Directory Structures"
-verifyArticleDir
+verifyRecipeDir
 
 #-------------------------
 #   Verify/create subdirectories

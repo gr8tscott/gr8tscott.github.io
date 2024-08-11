@@ -30,11 +30,8 @@
 #------------
 URLs=(
     # 'https://www.cnbc.com/2024/06/19/solar-is-growing-faster-than-any-energy-source-as-clean-power-for-data-centers.html'
-    # 'https://www.tipranks.com/news/apples-aapl-market-cap-to-hit-4t-says-wedbush'
-    'https://www.cnbc.com/2024/08/08/amazons-investment-in-ai-firm-anthropic-faces-uk-merger-investigation.html?&qsearchterm=amazon'
-    # 'https://www.cnbc.com/2024/08/10/why-tech-companies-are-shopping-for-nuclear-power-for-data-centers.html'
-    
-     # 'https://www.skinnytaste.com/shrimp-stir-fry/'
+    'https://www.tipranks.com/news/apples-aapl-market-cap-to-hit-4t-says-wedbush'
+#     'https://www.skinnytaste.com/shrimp-stir-fry/'
 #     'https://moonandspoonandyum.com/slow-cooker-roasted-potatoes/?utm_source=msn&utm_medium=page&utm_campaign=msn#recipe'
 #     'https://www.skinnytaste.com/chicken-florentine/'
 #     'https://damndelicious.net/2022/10/14/perfect-pot-roast/'

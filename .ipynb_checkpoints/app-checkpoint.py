@@ -8,6 +8,8 @@ from Prefix import prefix
 # from Frontend import adding_data
 # import psycopg2
 import subprocess
+import urllib.parse
+
 
 from flask import Flask, url_for
 
@@ -65,17 +67,54 @@ def index():
     return render_template('index.html')
 
 # Adapted from this stack overflow: https://stackoverflow.com/questions/52183357/flask-user-input-to-run-a-python-script
+# @app.route('/generate', methods=['GET'])
+# def generate():
+#     prefix = request.args.get('prefix')
+#     print(f"User input received: {prefix}")
+#     urls = []
+#     for number in range(1, 7):
+#         urls.append('https://example.com/{p}-{n}.jpg'.format(p=prefix, n=number))
+#     print("hello")
+#     print(urls)
+#     # return jsonify(result=urls)
+#     return jsonify(result = prefix)
 @app.route('/generate', methods=['GET'])
 def generate():
-    prefix = request.args.get('prefix')
-    print(f"User input received: {prefix}")
-    urls = []
-    for number in range(1, 7):
-        urls.append('https://example.com/{p}-{n}.jpg'.format(p=prefix, n=number))
-    print("hello")
-    # return jsonify(result=urls)
-    return jsonify(result = prefix)
+    url = request.args.get('prefix')
+    print(f"User input received: {url}")
 
+    # Ensure the URL is properly encoded
+    encoded_url = urllib.parse.quote(url, safe=':/')
+
+    script_path = os.path.join('extract_scripts', 'scraper.sh')
+
+    try:
+        # Run the script
+        result = subprocess.run([script_path, encoded_url], check=True, capture_output=True, text=True)
+        output = result.stdout.strip().splitlines()[-1]  # Get the last line of the output
+        error = result.stderr.strip()
+
+        print(f"Script output: {output}")
+        print(f"Script error: {error}")
+
+        # Check if the script output is a valid file path and the file exists
+        if os.path.isfile(output):
+            print(f"File found: {output}")
+            with open(output, 'r') as file:
+                file_content = file.read()
+            return jsonify(result=file_content)
+        else:
+            print(f"File not found: {output}")
+            return jsonify(result=f"Text file not found at the expected path: {output}"), 500
+    except subprocess.CalledProcessError as e:
+        print(f"Script execution failed: {e}")
+        print(f"Script stderr: {e.stderr}")
+        return jsonify(result=f"Script execution failed with error: {e.stderr}"), 500
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return jsonify(result=f"Unexpected error: {e}"), 500
+
+    
 @app.route('/hello')
 def hello():
     """
