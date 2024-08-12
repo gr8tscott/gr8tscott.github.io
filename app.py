@@ -13,6 +13,8 @@ from dotenv import load_dotenv
 import time
 import requests
 import sqlite3
+from datetime import datetime
+
 
 
 # create app to use in this Flask application
@@ -69,72 +71,8 @@ def index():
     stock_predictions = get_stock_predictions()
     return render_template('index.html', stock_predictions=stock_predictions)
 
-# @app.route('/')
-# def index():
-#     """
-#     Route to display the index page.
-
-#     Returns:
-#         str: HTML content for the index page.
-#     """
-#     lst = ''' 
-#         <h1>Required Routes</h1>
-#         <ul>
-#             <li>{}</li>
-#             <li>{}</li>
-#             <li>{}</li>
-#         </ul>
-#         '''.format(url_for('index'),url_for('hello'),url_for('about'))
-#     # return lst
-#     return render_template('index.html')
 
 # Adapted from this stack overflow: https://stackoverflow.com/questions/52183357/flask-user-input-to-run-a-python-script
-# @app.route('/generate', methods=['GET'])
-# def generate():
-#     prefix = request.args.get('prefix')
-#     print(f"User input received: {prefix}")
-#     urls = []
-#     for number in range(1, 7):
-#         urls.append('https://example.com/{p}-{n}.jpg'.format(p=prefix, n=number))
-#     print("hello")
-#     print(urls)
-#     # return jsonify(result=urls)
-#     return jsonify(result = prefix)
-# @app.route('/generate', methods=['GET'])
-# def generate():
-#     url = request.args.get('prefix')
-#     print(f"User input received: {url}")
-
-#     # Ensure the URL is properly encoded
-#     encoded_url = urllib.parse.quote(url, safe=':/')
-
-#     script_path = os.path.join('extract_scripts', 'scraper.sh')
-
-#     try:
-#         # Run the script
-#         result = subprocess.run([script_path, encoded_url], check=True, capture_output=True, text=True)
-#         output = result.stdout.strip().splitlines()[-1]  # Get the last line of the output
-#         error = result.stderr.strip()
-
-#         print(f"Script output: {output}")
-#         print(f"Script error: {error}")
-
-#         # Check if the script output is a valid file path and the file exists
-#         if os.path.isfile(output):
-#             print(f"File found: {output}")
-#             with open(output, 'r') as file:
-#                 file_content = file.read()
-#             return jsonify(result=file_content)
-#         else:
-#             print(f"File not found: {output}")
-#             return jsonify(result=f"Text file not found at the expected path: {output}"), 500
-#     except subprocess.CalledProcessError as e:
-#         print(f"Script execution failed: {e}")
-#         print(f"Script stderr: {e.stderr}")
-#         return jsonify(result=f"Script execution failed with error: {e.stderr}"), 500
-#     except Exception as e:
-#         print(f"Unexpected error: {e}")
-#         return jsonify(result=f"Unexpected error: {e}"), 500
 @app.route('/generate', methods=['GET'])
 def generate():
     url = request.args.get('prefix')
@@ -168,11 +106,14 @@ def generate():
     truncated_content = content[:300]
     
     # Call the OpenAI API with the extracted content
+    # Process the response and insert into database
     try:
+        conn = sqlite3.connect('stock_data.db')
+        cur = conn.cursor()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You analyze news articles and give a sentiment: 'buy', 'sell', or 'hold' based on the content. Output only the company ticker symbol and colon followed by your sentiment grade. Do not summarize."},
+                {"role": "system", "content": "You analyze news articles and give a sentiment: 'Buy', 'Sell', or 'Hold' based on the content. Output only the company ticker symbol and colon followed by your sentiment grade. Do not summarize."},
                 {"role": "user", "content": truncated_content}
             ]
         )
@@ -181,14 +122,28 @@ def generate():
     # ai_response= "AAPL: buy"
     
         ticker, sentiment = ai_response.split(": ")
-        stock_price = get_stock_price(ticker)
-
+        # stock_price = get_stock_price(ticker) #BRING THIS BACK WHEN MORE API CALLS ALLOWED
+        stock_price = 3.50
+        # Get the current date and format it as 'YYYY-MM-DD'
+        date_today = datetime.now().strftime('%Y-%m-%d')
+        print("Stock Price: ", stock_price)
         if stock_price:
-            ai_response = f"{ai_response} \nCurrent stock price for {ticker}: ${stock_price}"
+            ai_response = f"{ai_response}\n       \n Current stock price for {ticker}: ${stock_price}"
+            cur.execute('''
+                INSERT INTO stock_predictions (ticker, current_price, traded_price, ai_response, date)
+                VALUES (?, ?, ?, ?, ?);
+            ''', (ticker, stock_price, stock_price, sentiment, date_today))
+            conn.commit()
         else:
             ai_response = f"{ai_response}\nCould not fetch the current stock price for {ticker}."
-    except Exception as e:
-        ai_response = str(e)
+    # except Exception as e:
+    #     ai_response = str(e)
+    except sqlite3.Error as e:
+        return jsonify(error=f"Database error: {str(e)}"), 500
+
+    finally:
+        cur.close()
+        conn.close()
 
     print(f"AI Response: {ai_response}")
 
@@ -199,11 +154,6 @@ def generate():
         ai_response=ai_response
     )
 
-            
-#     except Exception as e:
-#         ai_response = str(e)
-    
-#     return jsonify(result=result)
 
 def run_extraction_script(url):
     script_path = "extract_scripts/scraper.sh"
@@ -224,6 +174,7 @@ def run_extraction_script(url):
         time.sleep(1)
     
     return title_file_path, text_file_path
+
 def get_stock_price(ticker):
     url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval=1min&apikey={alpha_vantage_api_key}'
     response = requests.get(url)
@@ -234,6 +185,44 @@ def get_stock_price(ticker):
         return stock_price
     else:
         return None
+    
+@app.route('/stock_data', methods=['GET'])
+def stock_data():
+    conn = sqlite3.connect('stock_data.db')
+    cur = conn.cursor()
+    
+    cur.execute('''
+        SELECT ticker, current_price, traded_price, ai_response, date
+        FROM stock_predictions
+    ''')
+    rows = cur.fetchall()
+    
+    # Process the rows into a list of dictionaries
+    stock_data = []
+    for row in rows:
+        stock_data.append({
+            'ticker': row[0],
+            'current_price': f'${get_stock_price(row[0])}',
+            'traded_price': f'${row[2]}',
+            'ai_response': row[3],
+            'date': row[4],
+            'correct_prediction': get_correct_prediction(row)
+        })
+    
+    cur.close()
+    conn.close()
+    
+    return jsonify(stock_data)
+
+def get_correct_prediction(row):
+    ticker, current_price, traded_price, ai_response, date = row
+    if ai_response == 'Buy' and current_price > traded_price:
+        return True
+    if ai_response == 'Hold' and current_price >= traded_price:
+        return True
+    if ai_response == 'Sell' and current_price < traded_price:
+        return True
+    return False
 
     
 @app.route('/hello')

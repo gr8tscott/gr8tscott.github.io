@@ -2,16 +2,39 @@
 <html lang="en">
 <head>
     <title>Stock Sentiment App v1.0</title>
-    <!-- Important to send user data to app.py -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Adding Bootstrap for table styling -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <center>
 <script type="text/javascript">
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  
   $(document).ready(function() {
+    // Fetch and display stock data
+    $.getJSON($SCRIPT_ROOT + '/stock_data', function(data) {
+      let tableHtml = '<table border="1"><tr><th>Ticker</th><th>Current Price</th><th>Traded Price</th><th>AI Response</th><th>Date</th><th>Correct Prediction</th></tr>';
+      
+      data.forEach(row => {
+        let correctPrediction = row.correct_prediction ? 
+          '<span style="color: green;">True</span>' : 
+          '<span style="color: red;">False</span>';
+        
+        tableHtml += `<tr>
+          <td>${row.ticker}</td>
+          <td>${row.current_price}</td>
+          <td>${row.traded_price}</td>
+          <td>${row.ai_response}</td>
+          <td>${row.date}</td>
+          <td>${correctPrediction}</td>
+        </tr>`;
+      });
+      
+      tableHtml += '</table>';
+      
+      // Insert table HTML into the page
+      $('#stock-table').html(tableHtml);
+    });
+    
     $('#download').bind('click', function() {
       $.getJSON($SCRIPT_ROOT + '/generate', {
         prefix: $('input[name="prefix"]').val()
@@ -24,7 +47,8 @@
       return false;
     });
   });
-</script><br>
+</script>
+
 <h2>Stock Sentiment App v1.0</h2>
 <p><input type="text" size="45" name="prefix"></p>
 <p><button type="submit" id="download">Send URL to AI</button></p>
@@ -32,43 +56,10 @@
 <p>Article Title: <span id="article_title"></span></p>
 <p>Article Content: <span id="article_content"></span></p>
 <p>AI Response: <span id="ai_response"></span></p>
-</center>
 
-<div class="container">
     <h2 class="mt-5">Stock Predictions</h2>
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Ticker</th>
-                <th>Current Price</th>
-                <th>Traded Price</th>
-                <th>AI Response</th>
-                <th>Date</th>
-                <th>Correct Prediction</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for prediction in stock_predictions %}
-            <tr>
-                <td>{{ prediction[0] }}</td>
-                <td>{{ prediction[1] }}</td>
-                <td>{{ prediction[2] }}</td>
-                <td>{{ prediction[3] }}</td>
-                <td>{{ prediction[4] }}</td>
-                <td>
-                    {% if (prediction[3] == 'Buy' and prediction[1] > prediction[2]) or
-                           (prediction[3] == 'Hold' and prediction[1] > prediction[2]) or
-                           (prediction[3] == 'Sell' and prediction[1] < prediction[2]) %}
-                            <span style="color:green;">True</span>
-                    {% else %}
-                        <span style="color:red;">False</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<div id="stock-table"></div>
 
+</center>
 </body>
 </html>
