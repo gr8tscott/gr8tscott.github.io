@@ -14,9 +14,10 @@
 #
 # Changelog:
 #    Date (MM-DD-YYYY)     Name      Change Description
-#    02-15-2024            EDonkus   Initial Creation
-#    08-10-2024            ChatGPT   Updated to scrape news article body text and prevent overwriting files
-#    08-10-2024            ChatGPT   Updated to extract text from specific div and p tags
+#    02-15-2024            MScott    Initial Creation
+#    07-14-2024            MScott    Updated to scrape news article body text and prevent overwriting files
+#    07-21-2024            MScott    Updated to extract text from specific div and p tags
+#    08-10-2024            MScott    Added conversion of '&#x27;' to single quote (') in text and title files
 #------------------------------------------------------------------
 DEBUG=1
 
@@ -51,6 +52,7 @@ validateURL () {
 #---------------
 # Extracts the body text of the news article and saves specific sections to files
 #---------------
+# Extracts the body text of the news article and saves specific sections to files
 extractArticleBody () {
     decho "Extracting Article Body"
     
@@ -67,6 +69,9 @@ extractArticleBody () {
         decho "ERROR: Couldn't extract article title"
         exit 2
     fi
+    
+    # Convert '&#x27;' to a single quote (')
+    title=$(echo "$title" | sed 's/&#x27;/'\''/g')
     
     # Limit title to the first 4 words and format for file names
     finalTitle=$(echo "$title" | awk '{for(i=1;i<=4;i++) printf "%s ", $i; print ""}' | tr -d '\n' | sed 's/[[:space:]]*$//')
@@ -106,6 +111,9 @@ extractArticleBody () {
     # Extract all <p> tags content within groups.html
     local groupPContent=$(sed -n '/<p>/,/<\/p>/p' "${articlePath}groups.html" | sed -e 's/<[^>]*>//g' | tr -d '\n' | sed -e 's/^[ \t]*//;s/[ \t]*$//')
     
+    # Convert '&#x27;' to a single quote (') in the content
+    groupPContent=$(echo "$groupPContent" | sed 's/&#x27;/'\''/g')
+    
     # Check if groupPContent is not empty
     if [[ -z "$groupPContent" ]]; then
         decho "Couldn't find <p> tags in ${articlePath}groups.html"
@@ -131,10 +139,16 @@ extractArticleBody () {
     # Convert the HTML content to plain text and save to a .txt file
     txtContentFile="${articlePath}${finalTitle}_content.txt"
     sed -e 's/<[^>]*>//g' -e 's/^[ \t]*//;s/[ \t]*$//' "$groupContentFile" > "$txtContentFile"
+    
+    # Convert '&#x27;' to a single quote (') in the text file
+    sed -i "s/&#x27;/'/g" "$txtContentFile"
+    
     decho "Converted HTML content to text and saved to $txtContentFile"
     
-    # Output the path of the created text file at the end
+    # Output the path of the created text file and title file at the end
     echo "$txtContentFile"
+    echo "$title" > "${articlePath}${finalTitle}_title.txt"
+    echo "${articlePath}${finalTitle}_title.txt"  # Add this line to output the title file path
 }
 
 #-------------------
@@ -158,6 +172,9 @@ extractWebsiteName () {
         decho "ERROR: Couldn't extract article title"
         exit 2
     fi
+    
+    # Convert '&#x27;' to a single quote (') in the title
+    title=$(echo "$title" | sed 's/&#x27;/'\''/g')
     
     # Get the first 4 words, replace spaces with underscores, and remove special characters
     finalTitle=$(echo "$title" | awk '{print $1" "$2" "$3" "$4}' | sed 's/ /_/g; s/[^a-zA-Z0-9_]//g')
@@ -244,5 +261,6 @@ moveRawHTML
 
 decho "Extraction Complete. Files at $articlePath"
 echo "Articles/$websiteName/$finalTitle/${finalTitle}_content.txt"
+echo "Articles/$websiteName/$finalTitle/${finalTitle}_title.txt"
 
 exit 0

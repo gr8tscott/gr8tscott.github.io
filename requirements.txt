@@ -4,3 +4,5 @@ Gunicorn
 
 openai
 python-dotenv
+
+requests

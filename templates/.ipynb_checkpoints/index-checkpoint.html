@@ -14,16 +14,22 @@
       $.getJSON($SCRIPT_ROOT + '/generate', {
         prefix: $('input[name="prefix"]').val()
       }, function(data) {
-        $("#result").text(data.result);
+        $("#user_input").text(data.user_input);
+        $("#article_title").text(data.article_title);
+        $("#article_content").text(data.article_content);
+        $("#ai_response").text(data.ai_response);
       });
       return false;
     });
   });
 </script><br>
 <h2>Stock Sentiment App v1.0</h2>
-<p><input type="text" size="45" name="prefix">
+<p><input type="text" size="45" name="prefix"></p>
 <p><button type="submit" id="download">Send URL to AI</button></p>
-<p>Your input is: <span id="result"></span></p>
+<p>Your input: <span id="user_input"></span></p>
+<p>Article Title: <span id="article_title"></span></p>
+<p>Article Content: <span id="article_content"></span></p>
+<p>AI Response: <span id="ai_response"></span></p>
 </center>
 </body>
 </html>

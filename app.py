@@ -12,10 +12,8 @@ import urllib.parse
 from openai import OpenAI
 from dotenv import load_dotenv
 import time
+import requests
 
-
-
-from flask import Flask, url_for
 
 # create app to use in this Flask application
 app = Flask(__name__)
@@ -23,9 +21,10 @@ app = Flask(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-# Retrieve the API key from the environment variables
-# openai.api_key = os.getenv("OPENAI_API_KEY")
+# Retrieve the API keys from the environment variables
 client = OpenAI()
+alpha_vantage_api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
+
 
 # Insert the wrapper for handling PROXY when using csel.io virtual machine
 # Calling this routine will have no effect if running on local machine:
@@ -133,40 +132,75 @@ def generate():
     with open(text_file_path, 'r') as file:
         content = file.read()
         
+    # Read the title of the article
+    with open(title_file_path, 'r') as file:
+        article_title = file.read().strip()
+    # return jsonify(result=article_title)
+        
     # Truncate the content to the first 500 characters
     truncated_content = content[:250]
     
     # Call the OpenAI API with the extracted content
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You analyze news articles and give a sentiment: 'buy', 'sell', or 'hold' based on the content. Output only the company ticker symbol followed by your sentiment grade. Do not summarize."},
-                {"role": "user", "content": truncated_content}
-            ]
-        )
-        print(response.choices[0].message.content)
-        print(response.choices[0].message.content.strip())
-        # result = response.choices[0].message['content'].strip()
-        result = response.choices[0].message.content
-    except Exception as e:
-        result = str(e)
+    # try:
+    #     response = client.chat.completions.create(
+    #         model="gpt-4o-mini",
+    #         messages=[
+    #             {"role": "system", "content": "You analyze news articles and give a sentiment: 'buy', 'sell', or 'hold' based on the content. Output only the company ticker symbol and colon followed by your sentiment grade. Do not summarize."},
+    #             {"role": "user", "content": truncated_content}
+    #         ]
+    #     )
+    #     ai_response = response.choices[0].message.content
+    # try:
+    ai_response= "AAPL: buy"
+        
+        # Example response: "AAPL: buy"
+    ticker, sentiment = ai_response.split(": ")
+    stock_price = get_stock_price(ticker)
+
+    if stock_price:
+        ai_response = f"{ai_response}\nCurrent stock price for {ticker}: ${stock_price}"
+    else:
+        ai_response = f"{ai_response}\nCould not fetch the current stock price for {ticker}."
+    # except Exception as e:
+    #     ai_response = str(e)
+    print(url)
+    print(article_title)
+    print(truncated_content)
+    print(ai_response)
+
+    return jsonify(user_input=url, article_title=article_title, article_content=truncated_content, ai_response=ai_response)
+
+            
+#     except Exception as e:
+#         ai_response = str(e)
     
-    return jsonify(result=result)
+#     return jsonify(result=result)
 
 def run_extraction_script(url):
     script_path = "extract_scripts/scraper.sh"
     result = subprocess.run([script_path, url], capture_output=True, text=True)
     output = result.stdout.strip().split('\n')
 
-    # Assuming the last line of the script output is the text file path
+    # Assuming the last two lines of the script output are the title file path and the text file path
+    title_file_path = output[-2]
     text_file_path = output[-1]
 
-    # Ensure the path is correct and wait for the file to be created if necessary
-    while not os.path.exists(text_file_path):
+    # Ensure the paths are correct and wait for the files to be created if necessary
+    while not os.path.exists(text_file_path) or not os.path.exists(title_file_path):
         time.sleep(1)
     
-    return text_file_path
+    return title_file_path, text_file_path
+
+def get_stock_price(ticker):
+    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval=1min&apikey={alpha_vantage_api_key}'
+    response = requests.get(url)
+    data = response.json()
+    if 'Time Series (1min)' in data:
+        last_refreshed = data['Meta Data']['3. Last Refreshed']
+        stock_price = data['Time Series (1min)'][last_refreshed]['4. close']
+        return stock_price
+    else:
+        return None
 
     
 @app.route('/hello')
