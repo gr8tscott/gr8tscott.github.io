@@ -4,6 +4,8 @@
     <title>Stock Sentiment App v1.0</title>
     <!-- Important to send user data to app.py -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Adding Bootstrap for table styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <center>
@@ -31,5 +33,42 @@
 <p>Article Content: <span id="article_content"></span></p>
 <p>AI Response: <span id="ai_response"></span></p>
 </center>
+
+<div class="container">
+    <h2 class="mt-5">Stock Predictions</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Current Price</th>
+                <th>Traded Price</th>
+                <th>AI Response</th>
+                <th>Date</th>
+                <th>Correct Prediction</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prediction in stock_predictions %}
+            <tr>
+                <td>{{ prediction[0] }}</td>
+                <td>{{ prediction[1] }}</td>
+                <td>{{ prediction[2] }}</td>
+                <td>{{ prediction[3] }}</td>
+                <td>{{ prediction[4] }}</td>
+                <td>
+                    {% if (prediction[3] == 'Buy' and prediction[1] > prediction[2]) or
+                           (prediction[3] == 'Hold' and prediction[1] > prediction[2]) or
+                           (prediction[3] == 'Sell' and prediction[1] < prediction[2]) %}
+                            <span style="color:green;">True</span>
+                    {% else %}
+                        <span style="color:red;">False</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>

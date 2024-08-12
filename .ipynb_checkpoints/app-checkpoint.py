@@ -1,5 +1,4 @@
-# This is the main Flask router for the Cut n Pasta Application.
-
+# This is the main Flask router for the Stock Sentiment APP Application.
 from flask import Flask, url_for
 from flask import send_file
 from flask import render_template, request, jsonify
@@ -13,6 +12,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import time
 import requests
+import sqlite3
 
 
 # create app to use in this Flask application
@@ -56,24 +56,37 @@ prefix.use_PrefixMiddleware(app)
 ##
 ## Place your required routes here
 ##
+def get_stock_predictions():
+    conn = sqlite3.connect('stock_data.db')
+    cur = conn.cursor()
+    cur.execute("SELECT ticker, current_price, traded_price, ai_response, date FROM stock_predictions")
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
 @app.route('/')
 def index():
-    """
-    Route to display the index page.
+    stock_predictions = get_stock_predictions()
+    return render_template('index.html', stock_predictions=stock_predictions)
 
-    Returns:
-        str: HTML content for the index page.
-    """
-    lst = ''' 
-        <h1>Required Routes</h1>
-        <ul>
-            <li>{}</li>
-            <li>{}</li>
-            <li>{}</li>
-        </ul>
-        '''.format(url_for('index'),url_for('hello'),url_for('about'))
-    # return lst
-    return render_template('index.html')
+# @app.route('/')
+# def index():
+#     """
+#     Route to display the index page.
+
+#     Returns:
+#         str: HTML content for the index page.
+#     """
+#     lst = ''' 
+#         <h1>Required Routes</h1>
+#         <ul>
+#             <li>{}</li>
+#             <li>{}</li>
+#             <li>{}</li>
+#         </ul>
+#         '''.format(url_for('index'),url_for('hello'),url_for('about'))
+#     # return lst
+#     return render_template('index.html')
 
 # Adapted from this stack overflow: https://stackoverflow.com/questions/52183357/flask-user-input-to-run-a-python-script
 # @app.route('/generate', methods=['GET'])
@@ -125,52 +138,66 @@ def index():
 @app.route('/generate', methods=['GET'])
 def generate():
     url = request.args.get('prefix')
-    # Run your extraction script here and get the path to the text file
-    text_file_path = run_extraction_script(url)
+    if not url:
+        return jsonify(error="No URL provided"), 400
+    
+    print(f"User URL: {url}")
+    
+    try:
+        title_file_path, text_file_path = run_extraction_script(url)
+    except Exception as e:
+        return jsonify(error=f"Failed to run extraction script: {str(e)}"), 500
 
-    # Read the content of the text file
-    with open(text_file_path, 'r') as file:
-        content = file.read()
-        
-    
-    
-    # Read the title of the article
-    with open(title_file_path, 'r') as file:
-        article_title = file.read().strip()
-    # return jsonify(result=article_title)
+    print(f"Title file path: {title_file_path}")
+    print(f"Text file path: {text_file_path}")
+
+    try:
+        with open(text_file_path, 'r') as file:
+            content = file.read()
+    except Exception as e:
+        return jsonify(error=f"Failed to read text file: {str(e)}"), 500
+
+    try:
+        with open(title_file_path, 'r') as file:
+            article_title = file.read().strip()
+    except Exception as e:
+        return jsonify(error=f"Failed to read title file: {str(e)}"), 500
+
         
     # Truncate the content to the first 500 characters
-    truncated_content = content[:250]
+    truncated_content = content[:300]
     
     # Call the OpenAI API with the extracted content
-    # try:
-    #     response = client.chat.completions.create(
-    #         model="gpt-4o-mini",
-    #         messages=[
-    #             {"role": "system", "content": "You analyze news articles and give a sentiment: 'buy', 'sell', or 'hold' based on the content. Output only the company ticker symbol and colon followed by your sentiment grade. Do not summarize."},
-    #             {"role": "user", "content": truncated_content}
-    #         ]
-    #     )
-    #     ai_response = response.choices[0].message.content
-    # try:
-    ai_response= "AAPL: buy"
-        
-        # Example response: "AAPL: buy"
-    ticker, sentiment = ai_response.split(": ")
-    stock_price = get_stock_price(ticker)
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You analyze news articles and give a sentiment: 'buy', 'sell', or 'hold' based on the content. Output only the company ticker symbol and colon followed by your sentiment grade. Do not summarize."},
+                {"role": "user", "content": truncated_content}
+            ]
+        )
+        ai_response = response.choices[0].message.content
+    # # try:
+    # ai_response= "AAPL: buy"
+    
+        ticker, sentiment = ai_response.split(": ")
+        stock_price = get_stock_price(ticker)
 
-    if stock_price:
-        ai_response = f"{ai_response}\nCurrent stock price for {ticker}: ${stock_price}"
-    else:
-        ai_response = f"{ai_response}\nCould not fetch the current stock price for {ticker}."
-    # except Exception as e:
-    #     ai_response = str(e)
-    print(url)
-    print(article_title)
-    print(truncated_content)
-    print(ai_response)
+        if stock_price:
+            ai_response = f"{ai_response} \nCurrent stock price for {ticker}: ${stock_price}"
+        else:
+            ai_response = f"{ai_response}\nCould not fetch the current stock price for {ticker}."
+    except Exception as e:
+        ai_response = str(e)
 
-    return jsonify(user_input=url, article_title=article_title, article_content=truncated_content, ai_response=ai_response)
+    print(f"AI Response: {ai_response}")
+
+    return jsonify(
+        user_input=url, 
+        article_title=article_title, 
+        article_content=truncated_content, 
+        ai_response=ai_response
+    )
 
             
 #     except Exception as e:
@@ -180,19 +207,23 @@ def generate():
 
 def run_extraction_script(url):
     script_path = "extract_scripts/scraper.sh"
+    print(f"Running extraction script: {script_path} with URL: {url}")
     result = subprocess.run([script_path, url], capture_output=True, text=True)
+    print(f"Script output: {result.stdout}")
     output = result.stdout.strip().split('\n')
 
-    # Assuming the last two lines of the script output are the title file path and the text file path
-    title_file_path = output[-2]
-    text_file_path = output[-1]
+    if len(output) < 3:
+        raise RuntimeError("Extraction script did not provide sufficient output.")
+
+    title_file_path = output[-1]
+    text_file_path = output[-2]
 
     # Ensure the paths are correct and wait for the files to be created if necessary
     while not os.path.exists(text_file_path) or not os.path.exists(title_file_path):
+        print(f"Waiting for files: {text_file_path}, {title_file_path}")
         time.sleep(1)
     
     return title_file_path, text_file_path
-
 def get_stock_price(ticker):
     url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval=1min&apikey={alpha_vantage_api_key}'
     response = requests.get(url)

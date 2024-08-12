@@ -114,6 +114,14 @@ extractArticleBody () {
     # Convert '&#x27;' to a single quote (') in the content
     groupPContent=$(echo "$groupPContent" | sed 's/&#x27;/'\''/g')
     
+    # Remove unwanted phrases and erroneous content
+    groupPContent=$(echo "$groupPContent" | sed -e 's/Follow your favorite stocks//g' \
+                                                        -e 's/CREATE FREE ACCOUNT//g' \
+                                                        -e 's/Getty Images//g' \
+                                                        -e 's/&quot;//g')
+
+
+    
     # Check if groupPContent is not empty
     if [[ -z "$groupPContent" ]]; then
         decho "Couldn't find <p> tags in ${articlePath}groups.html"

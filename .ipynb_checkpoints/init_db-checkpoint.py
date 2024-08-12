@@ -19,7 +19,8 @@ cur.execute('''
         current_price REAL NOT NULL,
         traded_price REAL NOT NULL,
         ai_response TEXT NOT NULL,
-        date TEXT NOT NULL
+        date TEXT NOT NULL,
+        correct BOOLEAN NOT NULL
     );
 ''')
 
