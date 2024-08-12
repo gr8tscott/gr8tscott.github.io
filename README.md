@@ -11,7 +11,7 @@ I am going to build an application that uses the OpenAI platform/framework to fe
 | 3 Webscrape Article Data            |    Provide webscraping script with article and verify it properly scrapes the data             |    Yes                    |   
 | 4 Send Webscraped Data to AI           |  Send the webscraped data to the AI and send it's response of the analyzed data back.               |     Yes                   |   
 | 5 Database to track AI responses            |  Create a database to keep track of the AI responses, try to tie in live stock data to track over time               | Yes                         | 
-| 6 CSS for App           |  Build out the application, make it look nice, display the database tracked data                      |   | 
+| 6 CSS for App           |  Build out the application, make it look nice, display the database tracked data                      |Yes   | 
 | 7 Automate Webscraper (webcrawler?)            | Set up the web scraper to automatically search articles on stocks (at specified time, 9am EST before markets open)                |                        |   
 | 8 Deploy App  | Deploy the application using Render  |     |
 
