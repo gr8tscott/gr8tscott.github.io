@@ -44,7 +44,7 @@ try:
     # Insert sample data
     data = [
         ('AAPL', aapl_price, 152.28, 'Buy', '2024-07-24'),
-        ('GOOGL', googl_price, 150.21, 'Hold', '2024-07-24'),
+        ('GOOGL', googl_price, 172.63, 'Hold', '2024-07-24'),
         ('MSFT', msft_price, 299.09, 'Sell', '2024-07-24')
     ]
     

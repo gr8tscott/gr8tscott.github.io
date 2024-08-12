@@ -128,7 +128,7 @@ def generate():
         date_today = datetime.now().strftime('%Y-%m-%d')
         print("Stock Price: ", stock_price)
         if stock_price:
-            ai_response = f"{ai_response} <br>Current stock price for {ticker}: ${stock_price}<br>"
+            ai_response = f"{ai_response}\n       \n Current stock price for {ticker}: ${stock_price}"
             cur.execute('''
                 INSERT INTO stock_predictions (ticker, current_price, traded_price, ai_response, date)
                 VALUES (?, ?, ?, ?, ?);
@@ -203,7 +203,7 @@ def stock_data():
         stock_data.append({
             'ticker': row[0],
             'current_price': f'${get_stock_price(row[0])}',
-            'traded_price': f'${row[2]}',
+            'traded_price': "$"'{:.2f}'.format(row[2]),
             'ai_response': row[3],
             'date': row[4],
             'correct_prediction': get_correct_prediction(row)
