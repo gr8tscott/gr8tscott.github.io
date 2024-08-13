@@ -42,6 +42,13 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 print(f"DBURL: {DATABASE_URL}")
 
 try:
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    print("Connected to the database with SSL.")
+    conn.close()
+except Exception as e:
+    print(f"An error occurred: {e}")
+    
+try:
     # Connect to the database
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()

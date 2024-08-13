@@ -119,7 +119,7 @@ def generate():
         print("Stock Price: ", stock_price)
         if stock_price:
             ai_response = f"{ai_response}"
-            current_price = f"Current stock price for {ticker}: ${stock_price}"
+            current_price = f"Current stock price for {ticker}: $"'{:.2f}'.format(row[2])
             cur.execute('''
                 INSERT INTO stock_predictions (ticker, current_price, traded_price, ai_response, date)
                 VALUES (%s, %s, %s, %s, %s);
