@@ -3,8 +3,7 @@ from flask import Flask, url_for
 from flask import send_file
 from flask import render_template, request, jsonify
 import os
-from Prefix import prefix
-# from Frontend import adding_data
+# from Prefix import prefix
 import psycopg2
 import subprocess
 import urllib.parse
@@ -34,7 +33,7 @@ date_today = datetime.now().strftime('%Y-%m-%d')
 
 # Insert the wrapper for handling PROXY when using csel.io virtual machine
 # Calling this routine will have no effect if running on local machine:
-prefix.use_PrefixMiddleware(app)   
+# prefix.use_PrefixMiddleware(app)   
 
 #. venv/bin/activate
 # export FLASK_DEBUG=true
@@ -167,10 +166,6 @@ def run_extraction_script(url):
     return title_file_path, text_file_path
 
 def get_stock_price(ticker):
-    # Set the date to today
-    # date_today = datetime.now().strftime('%Y-%m-%d')
-    print('date_today: ', date_today)
-    
     # Construct the URL for the API request
     url = f'https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/minute/{date_today}/{date_today}?adjusted=true&sort=asc&limit=50000&apiKey={alpha_vantage_api_key}'
     # url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval=1min&apikey={alpha_vantage_api_key}'
