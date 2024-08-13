@@ -2,6 +2,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from datetime import datetime
+import pytz
 
 
 # Load environment variables from .env file
@@ -26,14 +27,16 @@ else:
 #         return stock_price
 #     else:
 #         return None
-{'v': 45668, 'vw': 216.9298, 'o': 216.84, 'c': 216.9701, 'h': 217.04, 'l': 216.7557, 't': 1723486800000, 'n': 694},
+# {'v': 45668, 'vw': 216.9298, 'o': 216.84, 'c': 216.9701, 'h': 217.04, 'l': 216.7557, 't': 1723486800000, 'n': 694},
 
 import requests
 from datetime import datetime
 
 def get_stock_price(tickers):
-    # Set the date to today
-    date_today = datetime.now().strftime('%Y-%m-%d')
+    # Set the local time zone to Denver
+    local_tz = pytz.timezone('America/Denver')  
+    date_today = datetime.now(local_tz).strftime('%Y-%m-%d')
+
     print('date_today: ', date_today)
     
     # Construct the URL for the API request

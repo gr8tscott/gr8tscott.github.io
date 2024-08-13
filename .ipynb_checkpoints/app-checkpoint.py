@@ -13,6 +13,7 @@ import time
 import requests
 import sqlite3
 from datetime import datetime
+import pytz
 
 
 # Create app to use in this Flask application
@@ -28,8 +29,10 @@ alpha_vantage_api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
 # Retrieve the database URL
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# Set the local time zone to Denver
+local_tz = pytz.timezone('America/Denver') 
 # Get todays date for stock calculations and adding to database:
-date_today = datetime.now().strftime('%Y-%m-%d')
+date_today = datetime.now(local_tz).strftime('%Y-%m-%d')
 
 # Insert the wrapper for handling PROXY when using csel.io virtual machine
 # Calling this routine will have no effect if running on local machine:
