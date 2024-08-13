@@ -1,8 +1,0 @@
-psycopg2==2.9.9 #Postgres connection
-flask==3.0.2
-Gunicorn
-
-openai
-python-dotenv
-
-requests
